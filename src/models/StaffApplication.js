@@ -1,9 +1,9 @@
-// src/models/Staff.js
+// src/models/StaffApplication.js
 const { DataTypes } = require('sequelize');
 const { db } = require('../config/database');
 
-const Staff = db.define('Staff', {
-    staff_id: {
+const StaffApplication = db.define('StaffApplication', {
+    application_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -11,7 +11,6 @@ const Staff = db.define('Staff', {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
     password: {
         type: DataTypes.STRING,
@@ -26,23 +25,9 @@ const Staff = db.define('Staff', {
     phone_number: {
         type: DataTypes.STRING,
     },
-    permission_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'staff_permissions',
-            key: 'permission_id',
-        },
-    },
-    office_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'offices',
-            key: 'office_id',
-        },
-    },
 }, {
-    tableName: 'staff',
+    tableName: 'staff_applications',
     timestamps: false,
 });
 
-module.exports = Staff;
+module.exports = StaffApplication;

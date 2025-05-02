@@ -1,17 +1,22 @@
 // src/app.js
 const express = require('express');
 const app = express();
-
-// Middleware (например, для обработки JSON)
-app.use(express.json());
-
-// Подключение маршрутов
+const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
-const clientRoutes = require('./routes/clientRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const productSyncRoutes = require('./routes/productSyncRoutes');
 const staffRoutes = require('./routes/staffRoutes');
+const officeRoutes = require('./routes/officeRoutes');
+const fileUpload = require('express-fileupload');
 
-app.use('/products', productRoutes);
-app.use('/clients', clientRoutes); // Подключаем маршруты для клиентов
-app.use('/staff', staffRoutes);   // Подключаем маршруты для персонала
+app.use(express.json());
+app.use(fileUpload());
+app.use(express.urlencoded({ extended: true }));
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/sync', productSyncRoutes);
+app.use('/api/staff', staffRoutes); 
+app.use('/api/offices', officeRoutes); 
 
 module.exports = app;

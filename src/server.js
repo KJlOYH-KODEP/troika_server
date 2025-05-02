@@ -1,21 +1,21 @@
 // src/server.js
 const app = require('./app');
+const { db } = require('./config/database'); // Import the database connection
 const port = process.env.PORT || 3000;
-const { Pool } = require('pg'); // Импортируем Pool
-const config = require('./config/database'); // Импортируем настройки
+const models = require('./models'); 
 
-const pool = new Pool(config); // Создаем пул соединений
+async function startServer() {
+    try {
+        // Синхронизируем модели с базой данных (создаем таблицы, если их нет)
+        await db.sync(); // { force: true } -  удалит все таблицы и создаст заново (использовать только для разработки!)
+        console.log('Database synced.');
 
-async function testDatabaseConnection() {
-  try {
-    const result = await pool.query('SELECT NOW()'); // Простой запрос
-    console.log('Database connection successful:', result.rows[0]);
-  } catch (err) {
-    console.error('Database connection failed:', err);
-  }
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Error starting server:', error);
+    }
 }
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-  testDatabaseConnection(); // Вызываем функцию для проверки подключения
-});
+startServer();
