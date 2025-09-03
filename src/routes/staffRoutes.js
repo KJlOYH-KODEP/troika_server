@@ -4,14 +4,22 @@ const router = express.Router();
 const StaffController = require('../controllers/StaffController');
 const { authenticateToken, authorize } = require('../middleware/authMiddleware');
 
-// Get all staff (requires admin role)
+// Получение списка всех сотрудников (требуется аутентификация, требуется роль admin)
 router.get('/', authenticateToken, authorize(['admin']), StaffController.getAllStaff);
-router.get('/:staffId', authenticateToken, authorize(['admin']), StaffController.getStaffById);
 
-// Approve/Reject applications (requires admin role)
-router.get('/applications', authenticateToken, authorize(['admin']), StaffController.getStaffApplications);
-router.post('/applications/:applicationId/approve', authenticateToken, authorize(['admin']), StaffController.approveStaffApplication);
-router.post('/applications/:applicationId/reject', authenticateToken, authorize(['admin']), StaffController.rejectStaffApplication);
-router.put('/:staffId/role', authenticateToken, authorize(['admin']), StaffController.updateStaffRole);
+// Регистрация сотрудника админом
+router.post('/register', authenticateToken, authorize(['admin']), StaffController.registerStaff);
+
+// Получение сотрудника по ID (требуется аутентификация, требуется роль admin для для доступа ко всем, но свои данные доступны с любой роли)
+router.get('/:staffId', authenticateToken, authorize(['admin', 'moderator', 'staff']), StaffController.getStaffById);
+
+// Обновление роли сотрудника (требуется аутентификация, требуется роль admin)
+router.delete('/:staffId', authenticateToken, authorize(['admin']), StaffController.deleteStaff);
+
+// Обновление роли сотрудника (требуется аутентификация, требуется роль admin)
+router.put('/:staffId/data', authenticateToken, authorize(['admin']), StaffController.updateStaffData); // включая роли
+
+// Обновление учетных данных сотрудника (требуется аутентификация)
+router.put('/credentials', authenticateToken, StaffController.updateCredentials);
 
 module.exports = router;

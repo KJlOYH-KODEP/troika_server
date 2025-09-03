@@ -19,10 +19,6 @@ const Product = db.define('Product', {
     description: {
         type: DataTypes.TEXT,
     },
-    image_source: {
-        type: DataTypes.ENUM('own', 'categorical', 'no'),
-        defaultValue: 'no',
-    },
     category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

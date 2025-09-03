@@ -1,13 +1,13 @@
 // src/server.js
 const app = require('./app');
-const { db } = require('./config/database'); // Import the database connection
+const { db } = require('./config/database');
 const port = process.env.PORT || 3000;
 const models = require('./models'); 
 
 async function startServer() {
     try {
         // Синхронизируем модели с базой данных (создаем таблицы, если их нет)
-        await db.sync(); // { force: true } -  удалит все таблицы и создаст заново (использовать только для разработки!)
+        await db.sync();
         console.log('Database synced.');
 
         app.listen(port, () => {

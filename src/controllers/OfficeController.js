@@ -1,17 +1,40 @@
 // src/controllers/OfficeController.js
 const { Office } = require('../models');
+const { db } = require('../config/database');
+const { Op } = require('sequelize');
+const { getPaginationParams } = require('../utils/pagination')
 
 class OfficeController {
-    static async getAllOffices(req, res) {
+    static async getOffices(req, res) {
+        const { limit, offset } = getPaginationParams(req);
+        const settlement = req.query.settlement || '';
+        const addressLine = req.query.addressLine || '';
+    
         try {
-            const offices = await Office.findAll();
-            res.status(200).json(offices);
+          const whereClause = {};
+          if (settlement) {
+            whereClause.settlement = settlement;
+          }
+          if (addressLine) {
+            whereClause.addressLine = addressLine;
+          }
+    
+          const offices = await Office.findAll({
+            where: [
+                { settlement: { [Op.iLike]: `%${settlement}%` } },
+                { address_line: { [Op.iLike]: `%${addressLine}%` } }
+            ],
+            limit,
+            offset
+          });
+    
+          res.status(200).json(offices);
         } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ошибка при получении списка офисов.' });
+          console.error(error);
+          res.status(500).json({ message: 'Ошибка при получении списка офисов.' });
         }
     }
-
+    
     static async getOfficeById(req, res) {
         const { id } = req.params;
         try {
@@ -28,6 +51,7 @@ class OfficeController {
 
     static async createOffice(req, res) {
         const { name, address_line, settlement, region, postal_code, country, phone_number } = req.body;
+        const transaction = await db.transaction();
         try {
             const office = await Office.create({
                 name,
@@ -37,9 +61,12 @@ class OfficeController {
                 postal_code,
                 country,
                 phone_number
-            });
+            }, { transaction });
+
+            await transaction.commit();
             res.status(201).json(office);
         } catch (error) {
+            await transaction.rollback();
             console.error(error);
             res.status(500).json({ message: 'Ошибка при создании офиса.' });
         }
@@ -48,9 +75,11 @@ class OfficeController {
     static async updateOffice(req, res) {
         const { id } = req.params;
         const { name, address_line, settlement, region, postal_code, country, phone_number } = req.body;
+        const transaction = await db.transaction();
         try {
-            const office = await Office.findByPk(id);
+            const office = await Office.findByPk(id, { transaction });
             if (!office) {
+                await transaction.rollback();
                 return res.status(404).json({ message: 'Офис не найден.' });
             }
             office.name = name;
@@ -60,9 +89,12 @@ class OfficeController {
             office.postal_code = postal_code;
             office.country = country;
             office.phone_number = phone_number;
-            await office.save();
+            await office.save({ transaction });
+
+            await transaction.commit();
             res.status(200).json(office);
         } catch (error) {
+            await transaction.rollback();
             console.error(error);
             res.status(500).json({ message: 'Ошибка при обновлении офиса.' });
         }

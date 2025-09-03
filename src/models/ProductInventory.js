@@ -1,4 +1,3 @@
-// src/models/ProductInventory.js
 const { DataTypes } = require('sequelize');
 const { db } = require('../config/database');
 
@@ -9,7 +8,7 @@ const ProductInventory = db.define('ProductInventory', {
         autoIncrement: true,
     },
     quantity: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     product_id: {
@@ -24,6 +23,18 @@ const ProductInventory = db.define('ProductInventory', {
         references: {
             model: 'offices',
             key: 'office_id',
+        },
+    },
+    ordered_quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    product_dates_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'product_dates',
+            key: 'product_dates_id',
         },
     },
 }, {

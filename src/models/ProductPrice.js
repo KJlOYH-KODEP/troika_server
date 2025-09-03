@@ -1,4 +1,3 @@
-// src/models/ProductPrice.js
 const { DataTypes } = require('sequelize');
 const { db } = require('../config/database');
 
@@ -12,12 +11,6 @@ const ProductPrice = db.define('ProductPrice', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
-    data_s: {
-        type: DataTypes.DATE,
-    },
-    data_e: {
-        type: DataTypes.DATE,
-    },
     product_id: {
         type: DataTypes.INTEGER,
         references: {
@@ -30,6 +23,13 @@ const ProductPrice = db.define('ProductPrice', {
         references: {
             model: 'price_types',
             key: 'price_type_id',
+        },
+    },
+    product_dates_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'product_dates',
+            key: 'product_dates_id',
         },
     },
 }, {

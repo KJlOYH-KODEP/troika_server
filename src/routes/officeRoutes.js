@@ -4,16 +4,16 @@ const router = express.Router();
 const OfficeController = require('../controllers/OfficeController');
 const { authenticateToken, authorize} = require('../middleware/authMiddleware');
 
-// GET /api/offices - Получить все офисы
-router.get('/', authenticateToken, OfficeController.getAllOffices);
+// Получение списка всех офисов (требуется аутентификация)
+router.get('/', authenticateToken, OfficeController.getOffices);
 
-// GET /api/offices/:id - Получить офис по ID
+// Получение офиса по ID (требуется аутентификация)
 router.get('/:id', authenticateToken, OfficeController.getOfficeById);
 
-// POST /api/offices - Создать офис (только для админов)
+// Создание офиса (требуется аутентификация, требуется роль admin)
 router.post('/', authenticateToken, authorize(['admin']), OfficeController.createOffice);
 
-// PUT /api/offices/:id - Обновить офис (только для админов)
+// Обновление офиса (требуется аутентификация, требуется роль admin)
 router.put('/:id', authenticateToken, authorize(['admin']), OfficeController.updateOffice);
 
 module.exports = router;
